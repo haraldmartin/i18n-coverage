@@ -35,6 +35,7 @@ function getArrayInput(value) {
 
 function parseFile(file) {
   console.log("Parsing file:", file);
+
   const translation = po2json.parseFileSync(file);
   const language = translation[""].language.trim().toLowerCase();
   const details = {
@@ -95,7 +96,11 @@ async function main() {
   core.setOutput("coverage", coverage);
 
   const context = github.context.payload;
-  if (!token || !context.head_commit) return;
+
+  if (!context.pull_request.head) {
+    console.log("no head commit", context);
+    return;
+  }
 
   console.log("Creating check run");
   const octokit = github.getOctokit(token);
@@ -113,7 +118,7 @@ async function main() {
     owner: context.repository.owner.login,
     repo: context.repository.name,
     name: "i18n-coverage",
-    head_sha: context.head_commit.id,
+    head_sha: context.pull_request.head.sha,
     status: "completed",
     conclusion,
     output: {
