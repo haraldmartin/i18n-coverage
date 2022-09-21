@@ -108,23 +108,26 @@ async function main() {
 
   if (!minCoverage) {
     conclusion = "neutral";
+    process.exit();
   } else if (coverage >= minCoverage) {
     conclusion = "success";
+    process.exit();
   } else {
     conclusion = "failure";
+    process.exit(1);
   }
 
-  octokit.checks.create({
-    owner: context.repository.owner.login,
-    repo: context.repository.name,
-    name: "i18n-coverage",
-    head_sha: context.pull_request.head.sha,
-    status: "completed",
-    conclusion,
-    output: {
-      title: `${coverage.toFixed(0)}% i18n coverage.`,
-      summary: summary + `, min-coverage: ${minCoverage}%`,
-      text: allSummaries.join("\n"),
-    },
-  });
+  // octokit.checks.create({
+  //   owner: context.repository.owner.login,
+  //   repo: context.repository.name,
+  //   name: "i18n-coverage",
+  //   head_sha: context.pull_request.head.sha,
+  //   status: "completed",
+  //   conclusion,
+  //   output: {
+  //     title: `${coverage.toFixed(0)}% i18n coverage.`,
+  //     summary: summary + `, min-coverage: ${minCoverage}%`,
+  //     text: allSummaries.join("\n"),
+  //   },
+  // });
 }
